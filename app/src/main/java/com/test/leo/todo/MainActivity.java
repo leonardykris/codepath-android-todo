@@ -8,6 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -91,5 +95,22 @@ public class MainActivity extends AppCompatActivity {
         }
       }
     );
+  }
+
+  private void writeItems() {
+    // Get app directory
+    File filesDir = getFilesDir();
+
+    // Create new file in app directory called todo.txt
+    File todoFile = new File(filesDir, "todo.txt");
+
+    try {
+      // Need to add dependency for this in build.gradle
+      //  compile 'commons-io:commons-io:2.4'
+      // Write content of items to separate lines in the todo.txt
+      FileUtils.writeLines(todoFile, items);
+    } catch(IOException error) {
+      error.printStackTrace();
+    }
   }
 }
