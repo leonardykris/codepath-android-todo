@@ -30,7 +30,11 @@ public class MainActivity extends AppCompatActivity {
     lvItems = (ListView)findViewById(R.id.lvItems);
 
     // Declare a list of items
-    items = new ArrayList<>();
+    // items = new ArrayList<>();
+
+    // Since now we're going to read and write from a file, trigger the
+    // method to read the items here
+    readItems();
 
     // Declare the adapter
     // From note:
@@ -67,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Reset the text field
     etNewItem.setText("");
+
+    // Write items to file when new item is added
+    writeItems();
   }
 
   private void setupListViewListener() {
@@ -90,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
           // like items instead of adding it through the adapter, the adapter
           // has to be refreshed back to reflect the changes made
 
+          // Write items to file when an item is deleted
+          writeItems();
+          
           // End function
           return true;
         }
