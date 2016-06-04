@@ -29,9 +29,6 @@ public class MainActivity extends AppCompatActivity {
     // Create a handle for the list view from activity_main layout
     lvItems = (ListView)findViewById(R.id.lvItems);
 
-    // Declare a list of items
-    // items = new ArrayList<>();
-
     // Since now we're going to read and write from a file, trigger the
     // method to read the items here
     readItems();
@@ -42,10 +39,6 @@ public class MainActivity extends AppCompatActivity {
     // within a ListView
     itemsAdapter = new ArrayAdapter<>(this, android.R.layout
             .simple_list_item_1, items);
-
-    // Test: add default items to list
-    items.add("First Item");
-    items.add("Second Item");
 
     // Set the item adapter to list view items
     lvItems.setAdapter(itemsAdapter);
@@ -67,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     String itemText = etNewItem.getText().toString();
 
     // Add supplied text to item adapter
-    items.add(itemText);
+    itemsAdapter.add(itemText);
 
     // Reset the text field
     etNewItem.setText("");
@@ -99,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
           // Write items to file when an item is deleted
           writeItems();
-          
+
           // End function
           return true;
         }
