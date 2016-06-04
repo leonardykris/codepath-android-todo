@@ -3,6 +3,7 @@ package com.test.leo.todo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Set the item adapter to list view items
     lvItems.setAdapter(itemsAdapter);
+
+    // Invoke list view listener
+    setupListViewListener();
   }
 
   public void onAddItem(View v) {
@@ -59,5 +63,33 @@ public class MainActivity extends AppCompatActivity {
 
     // Reset the text field
     etNewItem.setText("");
+  }
+
+  private void setupListViewListener() {
+    // Set the action to be taken when list view item receives long click
+    lvItems.setOnItemLongClickListener(
+      // AdapterView is a view whose children are determined by an Adapter
+      // ListView is a subclass of AdapterView
+      // In this case, it's lvItems with its itemsAdapter
+      new AdapterView.OnItemLongClickListener() {
+        @Override
+        // <?> stands for generic type
+        public boolean onItemLongClick(AdapterView<?> adapter, View
+                item, int index, long id) {
+          // Remove item upon long click by locating out its index position
+          items.remove(index);
+
+          // Trigger adapter to sync back the items since it has been changed
+          itemsAdapter.notifyDataSetChanged();
+
+          // It's to be noted that if items are added directly to the source,
+          // like items instead of adding it through the adapter, the adapter
+          // has to be refreshed back to reflect the changes made
+
+          // End function
+          return true;
+        }
+      }
+    );
   }
 }
