@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     // Get app directory
     File filesDir = getFilesDir();
 
-    // Create new file in app directory called todo.txt
+    // Create a handle to a file called todo.txt in the directory
     File todoFile = new File(filesDir, "todo.txt");
 
     try {
@@ -109,8 +109,26 @@ public class MainActivity extends AppCompatActivity {
       //  compile 'commons-io:commons-io:2.4'
       // Write content of items to separate lines in the todo.txt
       FileUtils.writeLines(todoFile, items);
-    } catch(IOException error) {
+    } catch (IOException error) {
       error.printStackTrace();
+    }
+  }
+
+  private void readItems() {
+    // Get app directory
+    File filesDir = getFilesDir();
+
+    // Create a handle to a file called todo.txt in the directory
+    File todoFile = new File(filesDir, "todo.txt");
+
+    try {
+      // Create an ArrayList from the content of the file read per line
+      // Assign the ArrayList to the global items variable
+      items = new ArrayList<String>(FileUtils.readLines(todoFile));
+    } catch (IOException error) {
+      // In case of error, like the file is empty or could not be read
+      // then assign an empty ArrayList instead to items
+      items = new ArrayList<String>();
     }
   }
 }
