@@ -1,12 +1,16 @@
 package com.test.leo.todo;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 
@@ -17,46 +21,44 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
   ArrayList<String> items;
   ArrayAdapter<String> itemsAdapter;
-  ListView lvItems; // a handle for listView
+  ListView lvItems;
+  EditText etNewItem;
+
+  private final int EDIT_ITEM = 20; // Edit Item
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    // Set the XML layout activity_main to this method that starts MainActivity
     setContentView(R.layout.activity_main);
 
-    // Create a handle for the list view from activity_main layout
     lvItems = (ListView)findViewById(R.id.lvItems);
+    etNewItem = (EditText)findViewById(R.id.etNewItem);
 
-    // Since now we're going to read and write from a file, trigger the
-    // method to read the items here
+    // Read items from file
     readItems();
 
-    // Declare the adapter
-    // From note:
-    // Adapter allows us to easily display the contents of an ArrayList
-    // within a ListView
-    itemsAdapter = new ArrayAdapter<>(this, android.R.layout
-            .simple_list_item_1, items);
+    // Declare an adapter for items
+    itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
 
     // Set the item adapter to list view items
     lvItems.setAdapter(itemsAdapter);
 
     // Invoke list view listener
     setupListViewListener();
+
+    etNewItem.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+      @Override
+      public void onFocusChange (View v, boolean hasFocus) {
+        if (!hasFocus) hideSoftKeyboard(v);
+      }
+    });
   }
 
   public void onAddItem(View v) {
-    // This is the method to add item to the ListView
-    // Trigger condition: onClick
-    // Trigger id: btnAddItem
-    // Params: etNewItem value
+    // Purpose: Add item to the ListView
+    // Trigger: btnAddItem:onClick
+    // Params: etNewItem:value
 
-    // Create a handle for the text field from activity_main layout
-    EditText etNewItem = (EditText)findViewById(R.id.etNewItem);
-
-    // Get the text from the text field, make sure it's in String format
     String itemText = etNewItem.getText().toString();
 
     // Add supplied text to item adapter
@@ -70,47 +72,43 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void setupListViewListener() {
-    // Set the action to be taken when list view item receives long click
     lvItems.setOnItemLongClickListener(
-      // AdapterView is a view whose children are determined by an Adapter
-      // ListView is a subclass of AdapterView
-      // In this case, it's lvItems with its itemsAdapter
       new AdapterView.OnItemLongClickListener() {
         @Override
-        // <?> stands for generic type
-        public boolean onItemLongClick(AdapterView<?> adapter, View
-                item, int index, long id) {
-          // Remove item upon long click by locating out its index position
+        public boolean onItemLongClick(AdapterView<?> adapter, View item, int index, long id) {
+          // Remove item upon long click by locating its index position
           items.remove(index);
 
           // Trigger adapter to sync back the items since it has been changed
           itemsAdapter.notifyDataSetChanged();
 
-          // It's to be noted that if items are added directly to the source,
-          // like items instead of adding it through the adapter, the adapter
-          // has to be refreshed back to reflect the changes made
-
           // Write items to file when an item is deleted
           writeItems();
 
-          // End function
           return true;
         }
       }
     );
+
+    lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> adapter, View item, int index, long id) {
+        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
+        i.putExtra("content", itemsAdapter.getItem(index));
+        i.putExtra("index", index);
+
+        startActivityForResult(i, EDIT_ITEM);
+      }
+    });
   }
 
   private void writeItems() {
-    // Get app directory
     File filesDir = getFilesDir();
-
-    // Create a handle to a file called todo.txt in the directory
     File todoFile = new File(filesDir, "todo.txt");
 
     try {
       // Need to add dependency for this in build.gradle
       //  compile 'commons-io:commons-io:2.4'
-      // Write content of items to separate lines in the todo.txt
       FileUtils.writeLines(todoFile, items);
     } catch (IOException error) {
       error.printStackTrace();
@@ -118,20 +116,41 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void readItems() {
-    // Get app directory
     File filesDir = getFilesDir();
-
-    // Create a handle to a file called todo.txt in the directory
     File todoFile = new File(filesDir, "todo.txt");
 
     try {
-      // Create an ArrayList from the content of the file read per line
-      // Assign the ArrayList to the global items variable
       items = new ArrayList<String>(FileUtils.readLines(todoFile));
     } catch (IOException error) {
-      // In case of error, like the file is empty or could not be read
-      // then assign an empty ArrayList instead to items
       items = new ArrayList<String>();
     }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (resultCode == RESULT_OK && requestCode == EDIT_ITEM) {
+      // Assign values
+      String content = data.getExtras().getString("content");
+      int index = data.getExtras().getInt("index");
+
+      // getExtras() can return null, getIntExtra force you to assign default value if null
+
+      // Check
+      if (content != "" && content != null) {
+        items.set(index, content);
+        itemsAdapter.notifyDataSetChanged();
+
+        // Write to file
+        writeItems();
+
+        // Toast
+        Toast.makeText(this, content + " is edited", Toast.LENGTH_SHORT).show();
+      }
+    }
+  }
+
+  public void hideSoftKeyboard(View view){
+    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 }
