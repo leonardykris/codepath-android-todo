@@ -8,16 +8,19 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
     tools:context="com.test.leo.todo.EditItemActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Edit Item Below:"
+        android:text="Edit Item:"
         android:id="@+id/tvEditItem"
+        android:layout_marginTop="69dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignEnd="@+id/btnSaveItem"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -26,13 +29,15 @@
         android:ems="10"
         android:id="@+id/etEditItem"
         android:layout_below="@+id/tvEditItem"
-        android:layout_alignParentStart="true"/>
+        android:layout_centerHorizontal="true"
+        android:imeOptions="actionDone"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save"
         android:id="@+id/btnSaveItem"
+        android:onClick="saveItem"
         android:layout_below="@+id/etEditItem"
-        android:layout_alignParentStart="true"/>
+        android:layout_centerHorizontal="true"/>
 </RelativeLayout>
