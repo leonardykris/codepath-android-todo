@@ -1,28 +1,25 @@
 package com.test.leo.todo;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
 
-import org.apache.commons.io.FileUtils;
+import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-  ArrayList<String> items;
-  ArrayAdapter<String> itemsAdapter;
-  ListView lvItems;
-  EditText etNewItem;
+  ArrayList<Task> tasks;
+  TasksAdapter tasksAdapter;
+  ListView items;
+  EditText newItem;
 
   private final int EDIT_ITEM = 20; // Edit Item
 
@@ -31,126 +28,67 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    lvItems = (ListView)findViewById(R.id.lvItems);
-    etNewItem = (EditText)findViewById(R.id.etNewItem);
+//    populateDB();
+    tasks = retrieveTasks();
 
-    // Read items from file
-    readItems();
+    items = (ListView)findViewById(R.id.items);
+    tasksAdapter = new TasksAdapter(this, tasks);
+    items.setAdapter(tasksAdapter);
 
-    // Declare an adapter for items
-    itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
 
-    // Set the item adapter to list view items
-    lvItems.setAdapter(itemsAdapter);
-
-    // Invoke list view listener
-    setupListViewListener();
-
-    etNewItem.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-      @Override
-      public void onFocusChange (View v, boolean hasFocus) {
-        if (!hasFocus) hideSoftKeyboard(v);
-      }
-    });
-  }
-
-  public void onAddItem(View v) {
-    // Purpose: Add item to the ListView
-    // Trigger: btnAddItem:onClick
-    // Params: etNewItem:value
-
-    String itemText = etNewItem.getText().toString();
-
-    // Add supplied text to item adapter
-    itemsAdapter.add(itemText);
-
-    // Reset the text field
-    etNewItem.setText("");
-
-    // Write items to file when new item is added
-    writeItems();
-  }
-
-  private void setupListViewListener() {
-    lvItems.setOnItemLongClickListener(
-      new AdapterView.OnItemLongClickListener() {
-        @Override
-        public boolean onItemLongClick(AdapterView<?> adapter, View item, int index, long id) {
-          // Remove item upon long click by locating its index position
-          items.remove(index);
-
-          // Trigger adapter to sync back the items since it has been changed
-          itemsAdapter.notifyDataSetChanged();
-
-          // Write items to file when an item is deleted
-          writeItems();
-
-          return true;
-        }
-      }
-    );
-
-    lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    items.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> adapter, View item, int index, long id) {
-        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
-        i.putExtra("content", itemsAdapter.getItem(index));
-        i.putExtra("index", index);
+        Snackbar.make(item, "List View item clicked", Snackbar.LENGTH_SHORT)
+                .setAction("Action", null).show();
 
-        startActivityForResult(i, EDIT_ITEM);
+        RelativeLayout menu = (RelativeLayout)item.findViewById(R.id.item_menu);
+
+        if (menu.getVisibility() == View.VISIBLE){
+          menu.setVisibility(View.GONE);
+        } else {
+          menu.setVisibility(View.VISIBLE);
+        }
       }
     });
   }
 
-  private void writeItems() {
-    File filesDir = getFilesDir();
-    File todoFile = new File(filesDir, "todo.txt");
+  protected void populateDB() {
 
-    try {
-      // Need to add dependency for this in build.gradle
-      //  compile 'commons-io:commons-io:2.4'
-      FileUtils.writeLines(todoFile, items);
-    } catch (IOException error) {
-      error.printStackTrace();
-    }
+//    Task first = new Task("Subscribe to Crunchyroll");
+//    Task second = new Task("Watch Kiznaiver's last episode");
+//    Task third = new Task("Fly to SF");
+//
+//    first.save();
+//    second.save();
+//    third.save();
+
+//    Task item = new Task("My most important treasure");
+//    item.priority = 1;
+//    item.save();
   }
 
-  private void readItems() {
-    File filesDir = getFilesDir();
-    File todoFile = new File(filesDir, "todo.txt");
+  protected ArrayList<Task> retrieveTasks() {
+//    List<Task> tasks = Task.listAll(Task.class);
+    List<Task> tasks = Task.findWithQuery(Task.class, "Select * from Task order by priority desc");
 
-    try {
-      items = new ArrayList<String>(FileUtils.readLines(todoFile));
-    } catch (IOException error) {
-      items = new ArrayList<String>();
-    }
+    return new ArrayList<Task>(tasks);
   }
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (resultCode == RESULT_OK && requestCode == EDIT_ITEM) {
-      // Assign values
-      String content = data.getExtras().getString("content");
-      int index = data.getExtras().getInt("index");
+  public void showAddItemDialog(View view) {
 
-      // getExtras() can return null, getIntExtra force you to assign default value if null
-
-      // Check
-      if (content != "" && content != null) {
-        items.set(index, content);
-        itemsAdapter.notifyDataSetChanged();
-
-        // Write to file
-        writeItems();
-
-        // Toast
-        Toast.makeText(this, content + " is edited", Toast.LENGTH_SHORT).show();
-      }
-    }
-  }
-
-  public void hideSoftKeyboard(View view){
-    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+            .title("Add Item")
+            .content("Well this is supposed to be a dialog fragment")
+            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
+            .input("Content goes here", "Prefilled text", new MaterialDialog.InputCallback() {
+              @Override
+              public void onInput(MaterialDialog dialog, CharSequence input) {
+                // Do something
+                System.out.println("=============Clicked");
+              }
+            });
+    MaterialDialog dialog = builder.build();
+    dialog.show();
   }
 }
