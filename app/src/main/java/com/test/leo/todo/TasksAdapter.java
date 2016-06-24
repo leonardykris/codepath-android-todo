@@ -1,6 +1,7 @@
 package com.test.leo.todo;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,8 +29,6 @@ public class TasksAdapter extends ArrayAdapter<Task> {
 
   public void refreshData() {
     List<Task> tasks = Task.findWithQuery(Task.class, "Select * from Task order by priority desc");
-//    ArrayList<Task> array_tasks = new ArrayList<Task>(tasks);
-
     this.tasks.clear();
     this.tasks.addAll(tasks);
     notifyDataSetChanged();
@@ -43,14 +42,15 @@ public class TasksAdapter extends ArrayAdapter<Task> {
 
     TextView content = (TextView)convertView.findViewById(R.id.content);
 
+    final int p = position;
     final Task task = getItem(position);
     content.setText(task.content);
 
-    ImageView check = (ImageView)convertView.findViewById(R.id.check);
-    ImageView edit = (ImageView)convertView.findViewById(R.id.edit);
-    ImageView notification = (ImageView)convertView.findViewById(R.id.notification);
-    ImageView priority = (ImageView)convertView.findViewById(R.id.priority);
-    ImageView priority_icon = (ImageView)convertView.findViewById(R.id.priority_icon);
+    final ImageView check = (ImageView)convertView.findViewById(R.id.check);
+    final ImageView edit = (ImageView)convertView.findViewById(R.id.edit);
+    final ImageView notification = (ImageView)convertView.findViewById(R.id.notification);
+    final ImageView priority = (ImageView)convertView.findViewById(R.id.priority);
+    final ImageView priority_icon = (ImageView)convertView.findViewById(R.id.priority_icon);
 
     check.setOnClickListener(new View.OnClickListener(){
       @Override
@@ -95,9 +95,10 @@ public class TasksAdapter extends ArrayAdapter<Task> {
 
     if (task.priority > 0) {
       priority_icon.setVisibility(View.VISIBLE);
-//      priority_icon.setImageTintList("#FFFFFF");
+      priority.setColorFilter(Color.parseColor("#42a5f5"));
     } else {
-      priority_icon.setVisibility(View.GONE);
+      priority_icon.setVisibility(View.INVISIBLE);
+      priority.setColorFilter(Color.parseColor("#999999"));
     }
 
     RelativeLayout menu = (RelativeLayout)convertView.findViewById(R.id.item_menu);

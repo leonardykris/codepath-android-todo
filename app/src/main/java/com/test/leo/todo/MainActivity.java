@@ -3,7 +3,6 @@ package com.test.leo.todo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -43,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 .setAction("Action", null).show();
 
         RelativeLayout menu = (RelativeLayout)item.findViewById(R.id.item_menu);
+        RelativeLayout side_icon = (RelativeLayout)item.findViewById(R.id.side_icon);
 
         if (menu.getVisibility() == View.VISIBLE){
           menu.setVisibility(View.GONE);
@@ -76,19 +76,15 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void showAddItemDialog(View view) {
+    boolean wrapInScrollView = true;
 
     MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
             .title("Add Item")
-            .content("Well this is supposed to be a dialog fragment")
-            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
-            .input("Content goes here", "Prefilled text", new MaterialDialog.InputCallback() {
-              @Override
-              public void onInput(MaterialDialog dialog, CharSequence input) {
-                // Do something
-                System.out.println("=============Clicked");
-              }
-            });
+            .customView(R.layout.dialog_add_item, wrapInScrollView)
+            .positiveText("Add");
+
     MaterialDialog dialog = builder.build();
+    View dialog_view = dialog.getCustomView();
     dialog.show();
   }
 }
