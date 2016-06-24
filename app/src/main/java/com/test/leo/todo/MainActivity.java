@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
   public void editItemDueDate(View view, Task t) {
     edit_task = t;
-    datepicker_mode = 2;
+    datepicker_mode = 3;
     Bundle of_joy = new Bundle();
     of_joy.putLong("due", edit_task.due);
 
@@ -328,15 +328,23 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     Calendar c = Calendar.getInstance();
     c.set(year, month, day, 0, 0);
 
-    CheckBox due = (CheckBox)due_view.findViewById(R.id.due);
-    due.setText("Due date set: " + day + "/" + (month + 1) + "/" + year);
+    CheckBox due;
 
     switch(datepicker_mode) {
       case 1:
         new_task.due = c.getTimeInMillis();
+        due = (CheckBox)due_view.findViewById(R.id.due);
+        due.setText("Due date set: " + day + "/" + (month + 1) + "/" + year);
         break;
       case 2:
         edit_task.due = c.getTimeInMillis();
+        due = (CheckBox)due_view.findViewById(R.id.due);
+        due.setText("Due date set: " + day + "/" + (month + 1) + "/" + year);
+        break;
+      case 3:
+        edit_task.due = c.getTimeInMillis();
+        edit_task.save();
+        tasksAdapter.refreshData();
         break;
     }
 
