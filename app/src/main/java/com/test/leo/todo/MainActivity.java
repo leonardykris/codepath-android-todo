@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -52,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     items.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> adapter, View item, int index, long id) {
-        Snackbar.make(item, "List View item clicked", Snackbar.LENGTH_SHORT)
-                .setAction("Action", null).show();
 
         RelativeLayout menu = (RelativeLayout)item.findViewById(R.id.item_menu);
         RelativeLayout side_icon = (RelativeLayout)item.findViewById(R.id.side_icon);
