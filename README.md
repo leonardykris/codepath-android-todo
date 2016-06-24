@@ -37,7 +37,10 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Challenges:
+
+1. For the dropdown icons, I wanted to use Expandable List at first but after researching it for a while I felt that extending/implementing it is an overkill since I only needed the sub-item to be fixed icons. I have to configure the visibility options myself.
+1. After realizing that ActiveAndroid is no longer maintained (Oct 2014) and facing number of issues that comes up while configuring it, I searched for another ORM and found Sugar to be really easy to use (although it has conflicting documentations since 1.3/1.4 was obsolete after 1.5 update rolled out)
 
 ## License
 
