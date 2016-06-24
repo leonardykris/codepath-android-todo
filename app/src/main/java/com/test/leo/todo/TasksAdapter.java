@@ -61,15 +61,16 @@ public class TasksAdapter extends ArrayAdapter<Task> {
       public void onClick(View view) {
         if (task.isCompleted) {
           task.isCompleted = false;
+          Snackbar.make(view, "Task marked incomplete!", Snackbar.LENGTH_SHORT)
+                  .setAction("Action", null).show();
         } else {
           task.isCompleted = true;
+          Snackbar.make(view, "Task marked complete!", Snackbar.LENGTH_SHORT)
+                  .setAction("Action", null).show();
         }
         task.save();
 
         refreshData();
-
-        Snackbar.make(view, "Task marked complete!", Snackbar.LENGTH_SHORT)
-                .setAction("Action", null).show();
       }
     });
 
@@ -78,16 +79,13 @@ public class TasksAdapter extends ArrayAdapter<Task> {
       public void onClick(View view) {
         MainActivity activity = (MainActivity)context;
         activity.showEditItemDialog(view, task);
-
-        Snackbar.make(view, "Edit clicked", Snackbar.LENGTH_SHORT)
-                .setAction("Action", null).show();
       }
     });
     notification.setOnClickListener(new View.OnClickListener(){
       @Override
       public void onClick(View view) {
-        Snackbar.make(view, "Notification clicked", Snackbar.LENGTH_SHORT)
-                .setAction("Action", null).show();
+        MainActivity activity = (MainActivity)context;
+        activity.editItemDueDate(view, task);
       }
     });
     priority.setOnClickListener(new View.OnClickListener(){
@@ -102,7 +100,7 @@ public class TasksAdapter extends ArrayAdapter<Task> {
 
         refreshData();
 
-        Snackbar.make(view, "Priority clicked", Snackbar.LENGTH_SHORT)
+        Snackbar.make(view, "Task's priority changed!", Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
       }
     });

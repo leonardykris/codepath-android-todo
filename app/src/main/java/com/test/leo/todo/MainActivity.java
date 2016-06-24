@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
   Task new_task = new Task();
   Task edit_task;
   View due_view;
+  boolean is_deleted;
   int datepicker_mode; // 1: add_task, 2: edit_task
 
   private final int EDIT_ITEM = 20; // Edit Item
@@ -62,6 +63,16 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         } else {
           menu.setVisibility(View.VISIBLE);
         }
+      }
+    });
+
+    items.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+      @Override
+      public boolean onItemLongClick(AdapterView<?> adapter, View item, int index, long id) {
+        edit_task = tasksAdapter.getItem(index);
+        showDeleteItemDialog();
+
+        return true;
       }
     });
   }
@@ -173,6 +184,33 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     });
   }
 
+  public void showDeleteItemDialog() {
+    MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+            .title("Delete Task?")
+            .content(edit_task.content)
+            .positiveText("Yes")
+            .negativeText("No")
+            .onPositive(new MaterialDialog.SingleButtonCallback() {
+              @Override
+              public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                edit_task.delete();
+                tasksAdapter.refreshData();
+                is_deleted = true;
+                dialog.dismiss();
+              }
+            })
+            .onNegative(new MaterialDialog.SingleButtonCallback() {
+              @Override
+              public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                is_deleted = false;
+                dialog.dismiss();
+              }
+            });
+
+    MaterialDialog dialog = builder.build();
+    dialog.show();
+  }
+
   public void showEditItemDialog(View view, Task t) {
     edit_task = t;
     boolean wrapInScrollView = true;
@@ -203,9 +241,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 View dialog_view = dialog.getCustomView();
                 RelativeLayout extra = (RelativeLayout)dialog_view.findViewById(R.id.extra);
 
-                edit_task.delete();
-                tasksAdapter.refreshData();
-
+                showDeleteItemDialog();
                 dialog.dismiss();
               }
             });
@@ -228,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     if (edit_task.due > 0) {
       c.setTimeInMillis(edit_task.due);
       due.setChecked(true);
-      due.setText("Due date set: " + c.get(Calendar.DAY_OF_MONTH) + "/" + c.get(Calendar
-              .MONTH) + "/" + c.get
+      due.setText("Due date set: " + c.get(Calendar.DAY_OF_MONTH) + "/" + (c.get(Calendar
+              .MONTH) + 1) + "/" + c.get
               (Calendar.YEAR));
     } else {
       due.setText("Set due date");
@@ -274,6 +310,17 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         }
       }
     });
+  }
+
+  public void editItemDueDate(View view, Task t) {
+    edit_task = t;
+    datepicker_mode = 2;
+    Bundle of_joy = new Bundle();
+    of_joy.putLong("due", edit_task.due);
+
+    DialogFragment setDate = new DatePickerFragment();
+    setDate.setArguments(of_joy);
+    setDate.show(getFragmentManager(), "datePicker");
   }
 
   public void onDateSet(DatePicker view, int year, int month, int day) {
