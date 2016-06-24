@@ -4,77 +4,54 @@
               android:layout_height="wrap_content"
               android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/signalStrength"
-        android:textColor="#80000000"
-        android:textSize="@dimen/customTitle" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/excellent"
-        android:textColor="#000000"
-        android:textSize="@dimen/customEntry" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="@string/ssid"
-        android:textColor="#80000000"
-        android:textSize="@dimen/customTitle" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/ssidLit"
-        android:textColor="#000000"
-        android:textSize="@dimen/customEntry" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="@string/security"
-        android:textColor="#80000000"
-        android:textSize="@dimen/customTitle" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/securityType"
-        android:textColor="#000000"
-        android:textSize="@dimen/customEntry" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="@string/password"
-        android:textColor="#80000000"
-        android:textSize="@dimen/customTitle" />
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="18dp"-->
+        <!--android:text="Content"-->
+        <!--android:textColor="#80000000"-->
+        <!--android:textSize="@dimen/customTitle" />-->
 
     <EditText
-        android:id="@+id/password"
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:inputType="textPassword"
+        android:inputType="text"
+        android:hint="Submit CodePath assignment"
         android:textColor="#000000"
         android:textSize="@dimen/customEntry" />
 
-    <CheckBox
-        android:id="@+id/showPassword"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="@string/showPassword"
-        android:textColor="#000000"
-        android:textSize="@dimen/customEntry" />
+        android:layout_below="@id/content"
+        android:id="@+id/extra">
+
+        <CheckBox
+            android:id="@+id/important"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="This task is important"
+            android:textColor="#000000"
+            android:textSize="@dimen/customEntry" />
+
+        <CheckBox
+            android:id="@+id/due"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/important"
+            android:layout_marginTop="4dp"
+            android:text="Set due date"
+            android:textColor="#000000"
+            android:textSize="@dimen/customEntry" />
+
+
+    </RelativeLayout>
+
+
+
+
 
 </LinearLayout>

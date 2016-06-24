@@ -50,7 +50,13 @@ public class TasksAdapter extends ArrayAdapter<Task> {
     final ImageView edit = (ImageView)convertView.findViewById(R.id.edit);
     final ImageView notification = (ImageView)convertView.findViewById(R.id.notification);
     final ImageView priority = (ImageView)convertView.findViewById(R.id.priority);
+
+    final ImageView notification_icon = (ImageView)convertView.findViewById(R.id.notification_icon);
     final ImageView priority_icon = (ImageView)convertView.findViewById(R.id.priority_icon);
+
+    final int n_length = notification_icon.getWidth();
+    final int p_length = priority_icon.getWidth();
+    final int c_length = content.getWidth();
 
     check.setOnClickListener(new View.OnClickListener(){
       @Override
@@ -97,8 +103,29 @@ public class TasksAdapter extends ArrayAdapter<Task> {
       priority_icon.setVisibility(View.VISIBLE);
       priority.setColorFilter(Color.parseColor("#42a5f5"));
     } else {
-      priority_icon.setVisibility(View.INVISIBLE);
+      priority_icon.setVisibility(View.GONE);
       priority.setColorFilter(Color.parseColor("#999999"));
+    }
+
+    RelativeLayout.LayoutParams params;
+
+    if (task.due > 0) {
+      notification_icon.setVisibility(View.VISIBLE);
+      if (task.priority > 0) {
+        params = new RelativeLayout.LayoutParams(notification_icon.getLayoutParams());
+        params.addRule(RelativeLayout.START_OF, priority_icon.getId());
+        params.removeRule(RelativeLayout.ALIGN_PARENT_END);
+        notification_icon.setLayoutParams(params);
+      } else {
+        params = new RelativeLayout.LayoutParams(notification_icon.getLayoutParams());
+        params.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+        params.removeRule(RelativeLayout.START_OF);
+        notification_icon.setLayoutParams(params);
+      }
+      notification.setColorFilter(Color.parseColor("#42a5f5"));
+    } else {
+      notification_icon.setVisibility(View.GONE);
+      notification.setColorFilter(Color.parseColor("#999999"));
     }
 
     RelativeLayout menu = (RelativeLayout)convertView.findViewById(R.id.item_menu);

@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="TODO"
         android:textColor="@color/colorPrimary"
-        android:id="@+id/textView"
+        android:id="@+id/title"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:fontFamily="sans-serif-medium"
@@ -40,19 +40,8 @@
         android:layout_height="match_parent"
         android:id="@+id/items"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView"
-        android:listSelector="@android:color/transparent"
+        android:layout_below="@+id/title"
         android:dividerHeight="1dp"
         android:layout_marginTop="10dp"/>
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/etNewItem"
-        android:hint="Add New Item"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:imeOptions="actionDone"
-        />
 
 </RelativeLayout>
