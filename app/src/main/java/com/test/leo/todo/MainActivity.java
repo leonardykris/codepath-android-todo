@@ -29,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
   TasksAdapter tasksAdapter;
   ListView items;
   Task new_task = new Task();
+  Task edit_task;
+  View due_view;
+  int datepicker_mode; // 1: add_task, 2: edit_task
 
   private final int EDIT_ITEM = 20; // Edit Item
 
@@ -80,7 +83,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
   protected ArrayList<Task> retrieveTasks() {
 //    List<Task> tasks = Task.listAll(Task.class);
-    List<Task> tasks = Task.findWithQuery(Task.class, "Select * from Task order by priority desc");
+    List<Task> tasks = Task.findWithQuery(Task.class, "Select * from Task order by " +
+            "is_completed, priority desc, due desc");
 
     return new ArrayList<Task>(tasks);
   }
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     EditText content = (EditText)dialog_view.findViewById(R.id.content);
     CheckBox important = (CheckBox)dialog_view.findViewById(R.id.important);
-    CheckBox due = (CheckBox)dialog_view.findViewById(R.id.due);
+    final CheckBox due = (CheckBox)dialog_view.findViewById(R.id.due);
     RelativeLayout extra = (RelativeLayout)dialog_view.findViewById(R.id.extra);
 
     extra.setVisibility(View.GONE);
@@ -160,8 +164,113 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         if(((CheckBox)v).isChecked()){
           DialogFragment setDate = new DatePickerFragment();
           setDate.show(getFragmentManager(), "datePicker");
+          datepicker_mode = 1;
+          due_view = v;
         } else {
+          due.setText("Set due date");
+        }
+      }
+    });
+  }
 
+  public void showEditItemDialog(View view, Task t) {
+    edit_task = t;
+    boolean wrapInScrollView = true;
+
+    MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+            .title("Edit Task")
+            .autoDismiss(false)
+            .customView(R.layout.dialog_edit_item, wrapInScrollView)
+            .positiveText("Save")
+            .negativeText("Delete")
+            .onPositive(new MaterialDialog.SingleButtonCallback() {
+              @Override
+              public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                View dialog_view = dialog.getCustomView();
+                EditText content = (EditText)dialog_view.findViewById(R.id.content);
+
+                edit_task.content = content.getText().toString();
+                edit_task.save();
+
+                tasksAdapter.refreshData();
+
+                dialog.dismiss();
+              }
+            })
+            .onNegative(new MaterialDialog.SingleButtonCallback() {
+              @Override
+              public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                View dialog_view = dialog.getCustomView();
+                RelativeLayout extra = (RelativeLayout)dialog_view.findViewById(R.id.extra);
+
+                edit_task.delete();
+                tasksAdapter.refreshData();
+
+                dialog.dismiss();
+              }
+            });
+
+    MaterialDialog dialog = builder.build();
+    View dialog_view = dialog.getCustomView();
+    dialog.show();
+
+    EditText content = (EditText)dialog_view.findViewById(R.id.content);
+    CheckBox complete = (CheckBox)dialog_view.findViewById(R.id.complete);
+    CheckBox important = (CheckBox)dialog_view.findViewById(R.id.important);
+    final CheckBox due = (CheckBox)dialog_view.findViewById(R.id.due);
+
+    content.setText(edit_task.content);
+    complete.setChecked(edit_task.isCompleted);
+    important.setChecked(edit_task.priority > 0);
+
+    Calendar c = Calendar.getInstance();
+
+    if (edit_task.due > 0) {
+      c.setTimeInMillis(edit_task.due);
+      due.setChecked(true);
+      due.setText("Due date set: " + c.get(Calendar.DAY_OF_MONTH) + "/" + c.get(Calendar
+              .MONTH) + "/" + c.get
+              (Calendar.YEAR));
+    } else {
+      due.setText("Set due date");
+    }
+
+    content.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+      @Override
+      public void onFocusChange (View v, boolean hasFocus) {
+        if (!hasFocus) hideSoftKeyboard(v);
+      }
+    });
+    complete.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (((CheckBox) v).isChecked()) {
+          edit_task.isCompleted = true;
+        } else {
+          edit_task.isCompleted = false;
+        }
+      }
+    });
+    important.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if(((CheckBox)v).isChecked()){
+          edit_task.priority = 1;
+        } else {
+          edit_task.priority = 0;
+        }
+      }
+    });
+    due.setOnClickListener(new View.OnClickListener(){
+      @Override
+      public void onClick(View v) {
+        if(((CheckBox)v).isChecked()){
+          DialogFragment setDate = new DatePickerFragment();
+          setDate.show(getFragmentManager(), "datePicker");
+          datepicker_mode = 2;
+          due_view = v;
+        } else {
+          due.setText("Set due date");
         }
       }
     });
@@ -173,8 +282,20 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     Log.w("DatePicker", "Date = " + year);
 
     Calendar c = Calendar.getInstance();
-    c.set(year, month - 1, day, 0, 0);
-    new_task.due = c.getTimeInMillis();
+    c.set(year, month, day, 0, 0);
+
+    CheckBox due = (CheckBox)due_view.findViewById(R.id.due);
+    due.setText("Due date set: " + day + "/" + (month + 1) + "/" + year);
+
+    switch(datepicker_mode) {
+      case 1:
+        new_task.due = c.getTimeInMillis();
+        break;
+      case 2:
+        edit_task.due = c.getTimeInMillis();
+        break;
+    }
+
 
     // Attach the date returned from the datepicker fragment here
     // Like, new_task.due_date = new Date(year, month, date)

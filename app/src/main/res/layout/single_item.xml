@@ -16,7 +16,9 @@
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:text="@string/loremIpsum"
         android:maxLines="1"
+        android:fontFamily="sans-serif"
         android:ellipsize="end"
+        android:textColor="#000"
         android:id="@+id/content"/>
 
     <RelativeLayout
@@ -82,7 +84,8 @@
             android:id="@+id/edit"
             android:src="@drawable/ic_mode_edit_black_24dp"
             android:tint="#999"
-            android:layout_toEndOf="@+id/check"/>
+            android:layout_toEndOf="@+id/check"
+            android:onClick="showEditItemDialog"/>
         <ImageView
             android:layout_width="88dp"
             android:layout_height="48dp"

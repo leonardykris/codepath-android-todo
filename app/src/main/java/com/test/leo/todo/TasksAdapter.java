@@ -2,6 +2,7 @@ package com.test.leo.todo;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,8 @@ public class TasksAdapter extends ArrayAdapter<Task> {
   }
 
   public void refreshData() {
-    List<Task> tasks = Task.findWithQuery(Task.class, "Select * from Task order by priority desc");
+    List<Task> tasks = Task.findWithQuery(Task.class, "Select * from Task order by " +
+            "is_completed, priority desc, due desc");
     this.tasks.clear();
     this.tasks.addAll(tasks);
     notifyDataSetChanged();
@@ -54,16 +56,19 @@ public class TasksAdapter extends ArrayAdapter<Task> {
     final ImageView notification_icon = (ImageView)convertView.findViewById(R.id.notification_icon);
     final ImageView priority_icon = (ImageView)convertView.findViewById(R.id.priority_icon);
 
-    final int n_length = notification_icon.getWidth();
-    final int p_length = priority_icon.getWidth();
-    final int c_length = content.getWidth();
-
     check.setOnClickListener(new View.OnClickListener(){
       @Override
       public void onClick(View view) {
-        task.isCompleted = true;
+        if (task.isCompleted) {
+          task.isCompleted = false;
+        } else {
+          task.isCompleted = true;
+        }
         task.save();
-        Snackbar.make(view, "Check clicked", Snackbar.LENGTH_SHORT)
+
+        refreshData();
+
+        Snackbar.make(view, "Task marked complete!", Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
       }
     });
@@ -71,6 +76,9 @@ public class TasksAdapter extends ArrayAdapter<Task> {
     edit.setOnClickListener(new View.OnClickListener(){
       @Override
       public void onClick(View view) {
+        MainActivity activity = (MainActivity)context;
+        activity.showEditItemDialog(view, task);
+
         Snackbar.make(view, "Edit clicked", Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
       }
@@ -98,6 +106,16 @@ public class TasksAdapter extends ArrayAdapter<Task> {
                 .setAction("Action", null).show();
       }
     });
+
+    if (task.isCompleted) {
+      check.setColorFilter(Color.parseColor("#42a5f5"));
+      content.setTextColor(Color.parseColor("#999999"));
+      content.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+    } else {
+      check.setColorFilter(Color.parseColor("#999999"));
+      content.setTextColor(Color.parseColor("#000000"));
+      content.setPaintFlags(0);
+    }
 
     if (task.priority > 0) {
       priority_icon.setVisibility(View.VISIBLE);

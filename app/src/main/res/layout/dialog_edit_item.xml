@@ -5,12 +5,12 @@
               android:orientation="vertical">
 
     <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="18dp"-->
-        <!--android:text="Content"-->
-        <!--android:textColor="#80000000"-->
-        <!--android:textSize="@dimen/customTitle" />-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="18dp"-->
+    <!--android:text="Content"-->
+    <!--android:textColor="#80000000"-->
+    <!--android:textSize="@dimen/customTitle" />-->
 
     <EditText
         android:id="@+id/content"
@@ -20,7 +20,7 @@
         android:inputType="textMultiLine"
         android:maxLines="3"
         android:hint="e.g. Submit CodePath assignment"
-        android:textColor="#999"
+        android:textColor="#000000"
         android:textSize="@dimen/customEntry" />
 
     <RelativeLayout
@@ -30,10 +30,20 @@
         android:id="@+id/extra">
 
         <CheckBox
-            android:id="@+id/important"
+            android:id="@+id/complete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
+            android:text="This task is complete"
+            android:textColor="#999"
+            android:textSize="@dimen/customEntry" />
+
+        <CheckBox
+            android:id="@+id/important"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/complete"
+            android:layout_marginTop="4dp"
             android:text="This task is important"
             android:textColor="#999"
             android:textSize="@dimen/customEntry" />

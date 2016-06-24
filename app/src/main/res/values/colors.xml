@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#1e88e5</color>
     <color name="colorAccent">#42a5f5</color>
     <color name="white">#ffffff</color>
+    <color name="task_done">#999999</color>
 </resources>
